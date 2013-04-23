@@ -1,15 +1,12 @@
-package main
-import (
-	"fmt"
-	"math"
-)
+package euler
+import "math"
 
-func main() {
+func SumMultiples(n int) int {
 	sum := 0
-	for i:=0;i<1000;i++ {
+	for i:=0;i<n;i++ {
 		if math.Mod(float64(i),float64(3)) == 0 || math.Mod(float64(i),float64(5)) == 0 {
 			sum += i
 		}
-	}
-	fmt.Printf("The sum is: %d", sum)
+	}	
+	return sum
 }

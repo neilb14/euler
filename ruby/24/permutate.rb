@@ -1,0 +1,1 @@
+puts (0..9).to_a.permutation.map(&:join).sort[1_000_000-1]

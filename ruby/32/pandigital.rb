@@ -1,13 +1,27 @@
-# We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once; for example, the 5-digit number, 15234, is 1 through 5 pandigital.
+def is_pandigital(nums)
+	count,check = 0,{}
+	nums.each do |n|
+		n.to_s.each_char do |c|
+			return false if c == '0'
+			return false if check[c]
+			check[c] = true
+			count += 1
+		end
+	end
+	return count == 9
+end
 
-# The product 7254 is unusual, as the identity, 39 × 186 = 7254, containing multiplicand, multiplier, and product is 1 through 9 pandigital.
-
-# Find the sum of all products whose multiplicand/multiplier/product identity can be written as a 1 through 9 pandigital.
-
-# HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
-
-def pan()
-	for i in 1..9
+map,sum = {},0
+for i in 1..99
+	for j in 1..9999
+		k = i*j
+		next if map[k]
+		if is_pandigital([i,j,k])
+			map[k] = true
+			sum+=k
+			puts "#{i} x #{j} = #{k} (#{sum})"
+		end
 	end
 end
 
+puts sum

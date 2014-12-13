@@ -1,6 +1,4 @@
-#http://mathworld.wolfram.com/Factorion.html
-
-@memoize = {0=>1}
+@memoize = {0=>1}  #ouch 0!=1 not 0 :-)
 def factorial(i)
 	return @memoize[i] if @memoize[i]
 	result = (1..i).inject(:*)

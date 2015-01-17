@@ -136,7 +136,7 @@ File.open(ARGV.shift, 'r').each_line do |l|
 	total+=1
 	cards = l.split(/\s+/)
 	h1,h2 = hand(cards[0,5]),hand(cards[5,5])
-	print "#{h1[:values].inspect} vs #{h2[:values].inspect} "
+	print "#{h1[:cards].inspect} vs #{h2[:cards].inspect} "
 	player1,player2 = score(hand(cards[0,5])), score(hand(cards[5,5]))
 	for i in 0..(player1.length-1)
 		print "[#{won_by(i)}:#{player1[i]}:#{player2[i]}]" unless player1[i] == 0 and player2[i] == 0

@@ -50,7 +50,7 @@ def straight(hand)
 	last = 0
 	hand[:values].keys.sort.each do |v|
 		if last > 0
-			return 0 unless last-1 == v or (last == 5 and v == 14)
+			return 0 unless last+1 == v or (last == 5 and v == 14)
 		end
 		last = v
 	end
@@ -132,17 +132,17 @@ def hand(cards)
 end
 
 wins,total,remainder = 0,0,0
-File.open('p054_poker.txt', 'r').each_line do |l|
+File.open(ARGV.shift, 'r').each_line do |l|
 	total+=1
 	cards = l.split(/\s+/)
 	h1,h2 = hand(cards[0,5]),hand(cards[5,5])
-	print "#{h1[:cards].inspect} vs #{h2[:cards].inspect} "
+	print "#{h1[:values].inspect} vs #{h2[:values].inspect} "
 	player1,player2 = score(hand(cards[0,5])), score(hand(cards[5,5]))
 	for i in 0..(player1.length-1)
 		print "[#{won_by(i)}:#{player1[i]}:#{player2[i]}]" unless player1[i] == 0 and player2[i] == 0
 		if player1[i] > player2[i]
 			wins+=1
-			puts ""
+			puts "	"
 			break
 		elsif player2[i] > player1[i]
 			remainder +=1

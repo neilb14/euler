@@ -35,9 +35,9 @@ end
 def	full_house(hand)
 	return 0 unless hand[:values].keys.length == 2
 	results = {}
-	hand[:values].values.each {|v| results[v.length] }
+	hand[:values].each_pair {|k,v| results[v.length] = k }
 	return 0 if results[3].nil? or results[2].nil?
-	return hand[:values].keys.sort.last
+	results[3]
 end
 
 def flush(hand)
@@ -50,7 +50,7 @@ def straight(hand)
 	last = 0
 	hand[:values].keys.sort.each do |v|
 		if last > 0
-			return 0 unless last-1 == v
+			return 0 unless last-1 == v or (last == 5 and v == 14)
 		end
 		last = v
 	end
@@ -89,7 +89,12 @@ def one_pair(hand)
 end
 
 def high_card(hand)
-	hand[:values].keys.sort.last
+	champ = 0
+	hand[:values].each_pair do |value, cards|
+		next if cards.length > 1
+		champ = value unless champ > value
+	end
+	champ
 end
 
 def score(hand)
@@ -107,19 +112,44 @@ def score(hand)
 	results
 end
 
+def won_by(i)
+	results = []
+	results << :royal_flush
+	results << :straight_flush
+	results << :four_of_a_kind
+	results << :full_house
+	results << :flush
+	results << :straight
+	results << :three_of_a_kind
+	results << :two_pairs
+	results << :one_pair
+	results << :high_card
+	results[i]
+end
+
 def hand(cards)
 	{cards:cards, values:cards.group_by{|c| card_value c}, suits:cards.group_by{|c| c.chars.last }.keys.length}
 end
 
-wins = 0
-File.open('sample.txt', 'r').each_line do |l|
+wins,total,remainder = 0,0,0
+File.open('p054_poker.txt', 'r').each_line do |l|
+	total+=1
 	cards = l.split(/\s+/)
-	h = hand(cards[0,5])
-	puts h.inspect + " #{h[:values].keys.sort.last}" unless h[:suits] > 2
+	h1,h2 = hand(cards[0,5]),hand(cards[5,5])
+	print "#{h1[:cards].inspect} vs #{h2[:cards].inspect} "
 	player1,player2 = score(hand(cards[0,5])), score(hand(cards[5,5]))
 	for i in 0..(player1.length-1)
-		wins+=1 if player1[i] > player2[i]
+		print "[#{won_by(i)}:#{player1[i]}:#{player2[i]}]" unless player1[i] == 0 and player2[i] == 0
+		if player1[i] > player2[i]
+			wins+=1
+			puts ""
+			break
+		elsif player2[i] > player1[i]
+			remainder +=1
+			puts "  ==> 2:#{won_by(i)}"
+			break
+		end
 	end
 end
-
-puts "Player 1 won #{wins} hands"
+raise "Wins: #{wins} Remainder: #{remainder} Total: #{total}" unless total - wins == remainder
+puts "Player 1 won #{wins} of #{total} hands (#{remainder})"

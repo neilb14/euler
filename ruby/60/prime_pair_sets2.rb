@@ -1,4 +1,5 @@
 require 'prime'
+@memoize = {}
 
 def is_concat_prime?(a,b)
 	return false unless Prime.prime?((a.to_s + b.to_s).to_i)
@@ -6,8 +7,9 @@ def is_concat_prime?(a,b)
 	return true
 end
 
-def build_sets(list, indent)
+def build_sets(list)
 	return [list] unless list.length > 1
+	return @memoize[list.to_s] if @memoize[list.to_s]	
 	results= []
 	for a in list
 		set = []
@@ -16,10 +18,11 @@ def build_sets(list, indent)
 			next unless is_concat_prime?(a,b)
 			set << b
 		end
-		for sub_set in build_sets(set, indent + "  ")
+		for sub_set in build_sets(set)
 			results << [a] + sub_set
 		end
 	end
+	@memoize[list.to_s] = results
 	results
 end
 
@@ -30,11 +33,11 @@ Prime.each do |p|
 		next unless is_concat_prime?(p, prime)
 		compatibles << prime
 	end
-	sets = build_sets(compatibles,"")
+	sets = build_sets(compatibles)
 	champion = nil
 	for set in sets
 		set += [p]
-		next if set.length < 5
+		next if set.length < 5 	
 		sum = set.reduce(:+)
 		champion = {sum:sum, set:set} if champion.nil? or sum < champion[:sum]
 	end
